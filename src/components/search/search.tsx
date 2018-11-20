@@ -1,10 +1,18 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import './search.css';
-import { FontAwesome } from 'react-web-vector-icons';
 
-class Search extends Component {
+interface Props {
+    onChange: (value: string) => void,
+    history: any
+}
 
-    constructor(props) {
+interface State {
+    value: string
+}
+
+class Search extends React.Component<Props, State> {
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             value: ''
@@ -14,7 +22,7 @@ class Search extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
+    handleChange(event: any) {
         this.setState({value: event.target.value});
     }
 
@@ -39,14 +47,7 @@ class Search extends Component {
                     </div>
                     <div className="search__button-box">
                         <button type="submit" className="search__button">
-                            <FontAwesome
-                                name='search'
-                                color='#ffffff'
-                                size={20}
-                                style={{
-                                    verticalAlign: 'middle'
-                                }}
-                            />
+                            Поиск
                         </button>
                     </div>
                 </form>

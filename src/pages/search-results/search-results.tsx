@@ -1,21 +1,38 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import './search-results.css';
 import Navigation from '../../components/navigation/navigation';
 import Search from '../../components/search/search';
-import { searchMovies, getGenres } from '../../services/http/movies';
-import { FontAwesome } from 'react-web-vector-icons';
 import Pagination from "react-js-pagination";
 import { load_found_movies } from '../../actions/search-results';
 import { load_genres } from '../../actions/genres';
+import { IMoviesParams } from 'src/interfaces/params';
+import { IGenres } from 'src/interfaces/genres';
+import { IPopularMovies, IPopularMovie } from 'src/interfaces/popular';
+import { IStateToProps } from 'src/interfaces/search-results';
 
 var connect = require("react-redux").connect;
 
-class SearchResults extends Component {
+interface Props {
+    match: any,
+    history: any,
+    LoadFoundMovies: (params: IMoviesParams) => void,
+    found_movies_data: IPopularMovies
+    LoadGenres: () => void,
+    genres_data: Array<IGenres>
+}
 
-    constructor(props) {
+interface State {
+    query: string,
+    activePage: number
+}
+
+class SearchResults extends React.Component<Props, State> {
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             query: '',
+            activePage: 1
         }
 
         this.handlePageChange = this.handlePageChange.bind(this);
@@ -44,7 +61,7 @@ class SearchResults extends Component {
     }
 
     // получаем список фильмов
-    getMovies(params) {
+    getMovies(params: IMoviesParams) {
         this.props.LoadFoundMovies(params)
     }
 
@@ -54,7 +71,7 @@ class SearchResults extends Component {
     }
 
     // возвращает жанр в строковом виде
-    setGenre(genre_ids) {
+    setGenre(genre_ids: Array<number>) {
         const genres_name = [];
 
         for(const item of this.props.genres_data) {
@@ -70,7 +87,7 @@ class SearchResults extends Component {
     }
 
     // срабатывает при отправке формы поиска и возвращает новый результат
-    searchChange(value) {
+    searchChange(value: string) {
         this.props.history.replace({
             pathname: '/search-results/' + value
         });
@@ -88,7 +105,7 @@ class SearchResults extends Component {
     }
 
     // слушает изменение номера страницы пагинации
-    handlePageChange(pageNumber) {
+    handlePageChange(pageNumber: number) {
         window.scrollTo(0,0);
         const params = {
             page: pageNumber,
@@ -100,7 +117,7 @@ class SearchResults extends Component {
     renderMovies() {
         return (
             Object.keys(this.props.found_movies_data).length > 0 ? 
-            this.props.found_movies_data.data.map((movie, index) => {
+            this.props.found_movies_data.results.map((movie: IPopularMovie, index) => {
                 return (
                     <div key={index} className="results__movie movie">
                         <a className="movie__link" onClick={() => this.props.history.push({
@@ -139,7 +156,7 @@ class SearchResults extends Component {
                     <div className="results__form"></div>
                     <div className="results__movies">
                         <h1 className="results__title">
-                            <FontAwesome
+                            {/* <FontAwesome
                                 name='search'
                                 color='#f39061'
                                 size={30}
@@ -147,8 +164,8 @@ class SearchResults extends Component {
                                     position: 'absolute',
                                     left: 20
                                 }}
-                            />
-                            Результаты поиска
+                            /> */}
+                            Results
                         </h1>
                         {   
                             this.renderMovies()
@@ -156,11 +173,11 @@ class SearchResults extends Component {
                         <div className="results__pagination-box">
                             {
                                 Object.keys(this.props.found_movies_data).length > 0 ? <Pagination
-                                    activePage={this.props.found_movies_data.active_page}
+                                    activePage={this.props.found_movies_data.page}
                                     itemsCountPerPage={20}
                                     activeLinkClass="active_page"
                                     linkClass="page_link"
-                                    totalItemsCount={this.props.found_movies_data.totalResults < 1000 ? this.props.found_movies_data.totalResults : 1000}
+                                    totalItemsCount={this.props.found_movies_data.total_results < 1000 ? this.props.found_movies_data.total_results : 1000}
                                     pageRangeDisplayed={5}
                                     onChange={this.handlePageChange}
                                 /> : null
@@ -174,16 +191,16 @@ class SearchResults extends Component {
 
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: IStateToProps) {
     return {
         found_movies_data: state.load_found_movies,
         genres_data: state.load_genres
     };
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch: any) => {
     return {
-        LoadFoundMovies: (params) => dispatch(load_found_movies(params)),
+        LoadFoundMovies: (params: IMoviesParams) => dispatch(load_found_movies(params)),
         LoadGenres: () => dispatch(load_genres())
     }
 }

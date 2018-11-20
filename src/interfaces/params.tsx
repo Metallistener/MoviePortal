@@ -1,5 +1,6 @@
 export interface IMoviesParams {
-    page: number
+    page?: number,
+    query?: string
 }
 
 export interface IMovieParams {
