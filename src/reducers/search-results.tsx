@@ -11,7 +11,7 @@ const initialState = {
   total_results: 0
 }
 
-export const load_found_movies = (state: IPopularMovies = initialState, action: IAction) => {
+export const load_found_movies = (state: IPopularMovies = initialState, action: IAction): IPopularMovies => {
   switch (action.type) {
     case 'LOAD_FOUND_MOVIES_SUCCESS':
       return {
